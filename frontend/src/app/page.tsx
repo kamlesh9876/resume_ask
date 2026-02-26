@@ -71,7 +71,7 @@ export default function Home() {
           className="max-w-4xl mx-auto text-center"
         >
           <h1 className="text-5xl md:text-6xl font-bold text-zinc-900 dark:text-white mb-6">
-            Resume_see
+            Resume_see Clean
             <span className="text-blue-600 dark:text-blue-400">.</span>
           </h1>
           
