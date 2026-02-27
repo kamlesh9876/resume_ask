@@ -4,14 +4,14 @@ services:
     name: resume-see-backend
     env: python
     plan: free
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /health
     
     # Environment Variables (will be set in Render dashboard)
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9
+        value: 3.11
       - key: PORT
         value: 10000
         
