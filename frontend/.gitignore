@@ -83,3 +83,4 @@ venv.bak/
 backend/knowledge/candidates/
 backend/knowledge/*.json
 backend/db/
+.vercel

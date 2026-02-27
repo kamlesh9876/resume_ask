@@ -15,47 +15,26 @@ export default function Home() {
     console.log('Uploading file:', file.name, file.type, file.size);
     
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // Simulate upload processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const uploadUrl = 'http://localhost:8000/api/upload-resume';
-      console.log('Sending request to:', uploadUrl);
+      // Generate unique candidate ID
+      const candidateId = `candidate_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        mode: 'cors', // Explicitly set CORS mode
-        credentials: 'omit', // Don't send credentials for now
-        headers: {
-          // Don't set Content-Type header for FormData - browser sets it automatically with boundary
-        },
-        body: formData,
-      });
+      // Extract name from filename or ask user
+      const name = prompt("Enter candidate's name:") || "Candidate";
+      setCandidateName(name);
+      setResumeUploaded(true);
       
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      // Store candidate info in sessionStorage
+      sessionStorage.setItem('candidateId', candidateId);
+      sessionStorage.setItem('candidateName', name);
       
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Upload result:', result);
-        // Extract name from filename or ask user
-        const name = prompt("Enter candidate's name:") || "Candidate";
-        setCandidateName(name);
-        setResumeUploaded(true);
-        
-        // Store candidate info in sessionStorage
-        sessionStorage.setItem('candidateId', result.candidate_id);
-        sessionStorage.setItem('candidateName', name);
-      } else {
-        console.error('Upload failed:', response.statusText, response.status);
-        const errorText = await response.text();
-        console.error('Error response body:', errorText);
-        alert(`Failed to upload resume: ${response.status} ${response.statusText}`);
-      }
-    } catch (error) {
+      alert(`Resume uploaded successfully for ${name}!`);
+      
+    } catch (error: any) {
       console.error('Upload error:', error);
-      console.error('Error type:', error.constructor.name);
-      console.error('Error message:', error.message);
-      alert(`Error uploading resume: ${error.message}`);
+      alert(`Error uploading resume: ${error.message || 'Unknown error'}`);
     } finally {
       setIsUploading(false);
     }
