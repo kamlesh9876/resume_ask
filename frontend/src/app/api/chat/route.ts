@@ -1,33 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export const runtime = "nodejs";
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const { message } = body;
 
     if (!message) {
-      return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Message required" }, { status: 400 });
     }
 
-    // Simple rule-based responses
+    // Simple rule-based responses for serverless
     const lowerMessage = message.toLowerCase();
     let reply = "";
 
     if (lowerMessage.includes("skill") || lowerMessage.includes("tech")) {
-      reply = "I specialize in AI backend development with Python, FastAPI, and modern AI technologies. My core skills include backend development, AI integration, and building scalable applications.";
+      reply = "I specialize in AI backend development with Python, FastAPI, and modern AI technologies. My core skills include backend development, AI integration, and building scalable applications. [Skills]";
     } else if (lowerMessage.includes("project")) {
-      reply = "I'm currently working on Resume_see, an AI Developer Portfolio Assistant. I've built various AI-powered applications focusing on intelligent solutions.";
+      reply = "I'm currently working on Resume_see, an AI Developer Portfolio Assistant. I've built various AI-powered applications focusing on intelligent solutions. [Projects]";
     } else if (lowerMessage.includes("experience")) {
-      reply = "I'm an AI Backend Developer with experience building intelligent applications and scalable backend systems. I specialize in AI integration and modern web technologies.";
+      reply = "I'm an AI Backend Developer with experience building intelligent applications and scalable backend systems. I specialize in AI integration and modern web technologies. [Experience]";
+    } else if (lowerMessage.includes("contact") || lowerMessage.includes("reach")) {
+      reply = "You can connect with me through my portfolio or GitHub profile. As an AI backend developer, I'm always open to discussing AI projects and collaborations. [Contact]";
     } else {
-      reply = "I can help you learn about my skills in AI backend development, my projects like Resume_see, or my experience with modern technologies. What would you like to know more about?";
+      reply = "I can help you learn about my skills in AI backend development, my projects like Resume_see, or my experience with modern technologies. What specific aspect would you like to know more about? [General]";
     }
 
     return NextResponse.json({
-      reply
+      reply,
+      sources: ["[Knowledge Base]"]
     });
 
   } catch (error) {
@@ -37,4 +39,11 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ 
+    message: "Chat API is ready",
+    status: "healthy"
+  });
 }

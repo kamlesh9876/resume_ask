@@ -36,30 +36,24 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      // Simulate API call with local logic
-      const lowerMessage = input.toLowerCase();
-      let reply = "";
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          message: input, 
+          history: messages,
+          candidate_id: candidateId
+        }),
+      });
 
-      if (lowerMessage.includes("skill") || lowerMessage.includes("tech")) {
-        reply = "I specialize in AI backend development with Python, FastAPI, and modern AI technologies. My core skills include backend development, AI integration, and building scalable applications.";
-      } else if (lowerMessage.includes("project")) {
-        reply = "I'm currently working on Resume_see, an AI Developer Portfolio Assistant. I've built various AI-powered applications focusing on intelligent solutions.";
-      } else if (lowerMessage.includes("experience")) {
-        reply = "I'm an AI Backend Developer with experience building intelligent applications and scalable backend systems. I specialize in AI integration and modern web technologies.";
-      } else if (lowerMessage.includes("contact") || lowerMessage.includes("reach")) {
-        reply = "You can connect with me through my portfolio or GitHub profile. As an AI backend developer, I'm always open to discussing AI projects and collaborations.";
-      } else if (lowerMessage.includes("ai") || lowerMessage.includes("gemini") || lowerMessage.includes("groq")) {
-        reply = "I have extensive experience with AI integration, working with various AI APIs to build intelligent applications. I specialize in AI-powered backend solutions.";
-      } else {
-        reply = "I can help you learn about my skills in AI backend development, my projects like Resume_see, or my experience with modern technologies. What specific aspect would you like to know more about?";
-      }
+      if (!res.ok) throw new Error("Failed to send message");
 
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      const data = await res.json();
       const aiMessage: Message = { 
         role: "ai", 
-        content: reply 
+        content: data.reply || "Sorry, I couldn't process your request." 
       };
       
       setMessages(prev => [...prev, aiMessage]);
@@ -67,7 +61,7 @@ export default function ChatPage() {
       console.error("Error sending message:", error);
       const errorMessage: Message = { 
         role: "ai", 
-        content: "Sorry, there was an error processing your message. Please try again." 
+        content: "Sorry, there was an error connecting to the AI assistant. Please try again." 
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {

@@ -15,23 +15,36 @@ export default function Home() {
     console.log('Uploading file:', file.name, file.type, file.size);
     
     try {
-      // Simulate upload processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const formData = new FormData();
+      formData.append('file', file);
       
-      // Generate unique candidate ID
-      const candidateId = `candidate_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const response = await fetch("/api/upload-resume", {
+        method: 'POST',
+        body: formData,
+      });
       
-      // Extract name from filename or ask user
-      const name = prompt("Enter candidate's name:") || "Candidate";
-      setCandidateName(name);
-      setResumeUploaded(true);
+      console.log('Response status:', response.status);
       
-      // Store candidate info in sessionStorage
-      sessionStorage.setItem('candidateId', candidateId);
-      sessionStorage.setItem('candidateName', name);
-      
-      alert(`Resume uploaded successfully for ${name}!`);
-      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Upload result:', result);
+        
+        // Extract name from filename or ask user
+        const name = prompt("Enter candidate's name:") || "Candidate";
+        setCandidateName(name);
+        setResumeUploaded(true);
+        
+        // Store candidate info in sessionStorage
+        sessionStorage.setItem('candidateId', result.candidate_id);
+        sessionStorage.setItem('candidateName', name);
+        
+        alert(`Resume uploaded successfully for ${name}!`);
+      } else {
+        console.error('Upload failed:', response.statusText, response.status);
+        const errorText = await response.text();
+        console.error('Error response body:', errorText);
+        alert(`Failed to upload resume: ${response.status} ${response.statusText}`);
+      }
     } catch (error: any) {
       console.error('Upload error:', error);
       alert(`Error uploading resume: ${error.message || 'Unknown error'}`);
