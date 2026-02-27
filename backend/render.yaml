@@ -11,7 +11,7 @@ services:
     # Environment Variables (will be set in Render dashboard)
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.10
       - key: PORT
         value: 10000
         
